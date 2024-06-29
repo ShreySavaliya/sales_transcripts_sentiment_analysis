@@ -16,9 +16,10 @@ def set_page(page):
 
 def login(username, password):
     """Check if the provided username and password match the user database."""
-    if username in user_db and user_db[username] == password:
-        return True
-    return False
+    return True
+    # if username in user_db and user_db[username] == password:
+    #     return True
+    # return False
 
 
 def main():
@@ -77,7 +78,10 @@ def main():
                 # Send the file to the Flask server
                 files = {'file': uploaded_file.getvalue()}
                 print("Uploaded file:", files)
-                response = requests.post("http://127.0.0.1:5000/upload", files=files, timeout=1000000)
+                try:
+                    response = requests.post("http://127.0.0.1:5000/upload", files=files, timeout=500)
+                except Exception as e:
+                    print("Exception\n", e)
                 
                 if response.status_code == 200:
                     st.success("File successfully uploaded")

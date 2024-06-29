@@ -26,8 +26,8 @@ def upload_file():
         customer_timestamps = extract_customer_timestamps(content)
         sales_agent_dialogues = extract_sales_agent_dialogues(sales_agent_conversations)
         customer_dialogues = extract_customer_dialogues(customer_conversations)
-
-        analyze_sentiment(customer_dialogues)
+        sales_agent_sentiments = analyze_sentiment(sales_agent_dialogues)
+        customer_sentiments = analyze_sentiment(customer_dialogues)
 
         return jsonify({"message": "File received",
                        "content_1": content,
@@ -36,9 +36,11 @@ def upload_file():
                         "content_4": sales_agent_timestamps,
                         "content_5": customer_timestamps,
                         "content_6": sales_agent_dialogues,
-                        "content_7": customer_dialogues
+                        "content_7": sales_agent_sentiments,
+                        "content_8": customer_dialogues,
+                        "content_9": customer_sentiments
                         }), 200
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
