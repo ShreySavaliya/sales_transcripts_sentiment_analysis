@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from extract_content import (extract_conversations, extract_sales_agent_timestamps, extract_customer_timestamps,
                              extract_customer_dialogues, extract_sales_agent_dialogues)
+from sentiment_analysis import analyze_sentiment
 app = Flask(__name__)
 
 
@@ -26,6 +27,8 @@ def upload_file():
         sales_agent_dialogues = extract_sales_agent_dialogues(sales_agent_conversations)
         customer_dialogues = extract_customer_dialogues(customer_conversations)
 
+        analyze_sentiment(customer_dialogues)
+
         return jsonify({"message": "File received",
                        "content_1": content,
                         "content_2": sales_agent_conversations,
@@ -38,4 +41,4 @@ def upload_file():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5005)
+    app.run(debug=True, port=5000)

@@ -77,7 +77,7 @@ def main():
                 # Send the file to the Flask server
                 files = {'file': uploaded_file.getvalue()}
                 print("Uploaded file:", files)
-                response = requests.post("http://127.0.0.1:5005/upload", files=files)
+                response = requests.post("http://127.0.0.1:5000/upload", files=files, timeout=1000000)
                 
                 if response.status_code == 200:
                     st.success("File successfully uploaded")
