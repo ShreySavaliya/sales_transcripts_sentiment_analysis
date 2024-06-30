@@ -1,6 +1,10 @@
 import streamlit as st
 import requests
+from pie_chart import merge_sentiment_scores
+import plotly.express as px
+import pandas as pd
 
+st.set_page_config(layout="centered")
 # Sample user database (In-memory)
 user_db = {
     "user1": "password1",
@@ -23,7 +27,6 @@ def login(username, password):
 
 
 def main():
-    st.set_page_config(layout="centered")  # Set the layout to wide for a better appearance
 
     # Navigation bar
     st.markdown(
@@ -68,7 +71,7 @@ def main():
                 st.warning("Incorrect Username/Password")
 
     elif current_page == "upload":
-        st.write("Upload the transcript file you want sentiment analysis for:")
+        st.subheader("Upload the transcript file you want sentiment analysis for:")
         uploaded_file = st.file_uploader("Upload a text file", type="txt")
         if st.button("Upload"):
             if uploaded_file is not None:
@@ -85,7 +88,42 @@ def main():
                 
                 if response.status_code == 200:
                     st.success("File successfully uploaded")
-                    st.json(response.json())
+                    st.header("Transcript")
+                    transcript = response.json().get("content", "No Transcript Found")
+                    st.text_area("Transcript", value=transcript, height=300)
+                    print("Yaha tak pahucha")
+                    sales_agent_sentiments = response.json().get("sales_agent_sentiments", [])
+                    if sales_agent_sentiments:
+
+                        # Pie Chart for Sentiment Analysis
+                        st.header("Sentiment Analysis Pie Chart")
+                        merged_scores = {}
+                        for sentiment in sales_agent_sentiments:
+                            for key, value in sentiment.items():
+                                if key in merged_scores:
+                                    merged_scores[key] += value
+                                else:
+                                    merged_scores[key] = value
+
+                        fig = create_pie_chart(merged_scores)
+                        st.plotly_chart(fig)
+
+                        # Scatter PLot for Sentiment Analysis
+                        st.header("Sentiment Analysis Scatter Plot")
+                        df = scatter_plot(response.json().get("sales_agent_sentiments", []))
+                        fig = px.scatter(df, x='index', y='sentiment', size='score', color='sentiment',
+                                         color_discrete_map={'Positive': 'green', 'Neutral': 'grey', 'Negative': 'red'},
+                                         title='Sentiment Analysis Scatter Plot',
+                                         labels={'index': 'Index', 'sentiment': 'Sentiment'},
+                                         size_max=20,
+                                         template='plotly_dark')
+                        st.title("Sentiment Analysis Scatter Plot")
+                        st.plotly_chart(fig)
+
+                        #
+
+                    else:
+                        st.warning("No sentiment analysis data found.")
                 else:
                     st.error("File upload failed")
             else:
@@ -103,6 +141,44 @@ def main():
                 user_db[new_user] = new_password
                 st.success("You have successfully created an account")
                 st.info("Go to the Login section to login")
+
+
+def create_pie_chart(sentiment_scores):
+    color_map = {
+        'Neutral': 'grey',
+        'Positive': 'green',
+        'Negative': 'red'
+    }
+
+    labels = list(sentiment_scores.keys())
+    values = list(sentiment_scores.values())
+    colors = [color_map[label] for label in labels]
+
+    # Create a pie chart using Plotly
+    fig = px.pie(values=values, names=labels, title='Sentiment Analysis', color_discrete_sequence=colors)
+
+    return fig
+
+
+def scatter_plot(values):
+    sentiments = []
+    scores = []
+    indices = []
+
+    for idx, score_dict in enumerate(values):
+        for sentiment, score in score_dict.items():
+            sentiments.append(sentiment)
+            scores.append(score)
+            indices.append(idx)
+
+    # Create a DataFrame for plotting
+    df = pd.DataFrame({
+        'index': indices,
+        'sentiment': sentiments,
+        'score': scores
+    })
+
+    return df
 
 
 if __name__ == '__main__':

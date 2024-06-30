@@ -56,13 +56,10 @@ def analyze_sentiment(file_content):
         sentiment = {'Negative': scores[0], 'Neutral': scores[1], 'Positive': scores[2]}
         sentiments.append(sentiment)
 
-    print(sentiments)
-
     answers = []
     for value in sentiments:
         key = max(value, key=value.get)
         value = value[key]
         answers.append({key: value})
-    print(answers)
 
-    return sentiments
+    return answers
