@@ -1,8 +1,7 @@
 import streamlit as st
 import requests
-from pie_chart import merge_sentiment_scores
-import plotly.express as px
 import pandas as pd
+import plotly.express as px
 
 st.set_page_config(layout="centered")
 # Sample user database (In-memory)
@@ -90,97 +89,24 @@ def main():
                     st.header("Transcript")
                     transcript = response.json().get("content", "No Transcript Found")
                     st.text_area("Transcript", value=transcript, height=300)
-                    print("Yaha tak pahucha")
-                    options = ["Sales Agent", "Customer"]
-                    selected_option = st.selectbox("Select a person for sentiment analysis:", options, index=0)
+                    st.session_state.response = response
 
-                    if selected_option == "Sales Agent":
-                        sales_agent_sentiments = response.json().get("sales_agent_sentiments", [])
-                        if sales_agent_sentiments:
-
-                            # Pie Chart for Sentiment Analysis
-                            st.header("Sentiment Analysis Pie Chart")
-                            fig = create_pie_chart(sales_agent_sentiments)
-                            st.plotly_chart(fig)
-
-                            # Scatter PLot for Sentiment Analysis
-                            st.header("Sentiment Analysis Scatter Plot")
-                            df = scatter_plot(response.json().get("sales_agent_sentiments", []))
-                            fig = px.scatter(df, x='index', y='sentiment', size='score', color='sentiment',
-                                             color_discrete_map={'Positive': 'green', 'Neutral': 'grey',
-                                                                 'Negative': 'red'},
-                                             title='Sentiment Analysis Scatter Plot',
-                                             labels={'index': 'Index', 'sentiment': 'Sentiment'},
-                                             size_max=20,
-                                             template='plotly_dark')
-                            st.plotly_chart(fig)
-
-                            # Annotated Text Sentiment Analysis
-                            color_map = {
-                                'Positive': 'green',
-                                'Negative': 'red'
-                            }
-                            sales_agent_dialogues = response.json().get("sales_agent_dialogues")
-                            # Filter positive and negative sentiments
-                            filtered_data = [(list(item.keys())[0], list(item.values())[0], text) for item, text in
-                                             zip(sales_agent_sentiments, sales_agent_dialogues) if list(item.keys())[0]
-                                             in color_map]
-
-                            # Display the annotated text in Streamlit
-                            st.title("Annotated Sentiment Text")
-
-                            for sentiment, score, text in filtered_data:
-                                color = color_map[sentiment]
-                                st.markdown(f'<span style="color:{color};">{text}</span>', unsafe_allow_html=True)
-                        else:
-                            st.warning("No sentiment analysis data found.")
-
-                    elif selected_option == "Customer":
-
-                        customer_sentiments = response.json().get("customer_sentiments", [])
-                        if customer_sentiments:
-
-                            # Pie Chart for Sentiment Analysis
-                            st.header("Sentiment Analysis Pie Chart")
-                            fig = create_pie_chart(customer_sentiments)
-                            st.plotly_chart(fig)
-
-                            # Scatter PLot for Sentiment Analysis
-                            st.header("Sentiment Analysis Scatter Plot")
-                            df = scatter_plot(response.json().get("customer_sentiments", []))
-                            fig = px.scatter(df, x='index', y='sentiment', size='score', color='sentiment',
-                                             color_discrete_map={'Positive': 'green', 'Neutral': 'grey',
-                                                                 'Negative': 'red'},
-                                             title='Sentiment Analysis Scatter Plot',
-                                             labels={'index': 'Index', 'sentiment': 'Sentiment'},
-                                             size_max=20,
-                                             template='plotly_dark')
-                            st.plotly_chart(fig)
-
-                            # Annotated Text Sentiment Analysis
-                            color_map = {
-                                'Positive': 'green',
-                                'Negative': 'red'
-                            }
-                            customer_dialogues = response.json().get("customer_dialogues")
-                            # Filter positive and negative sentiments
-                            filtered_data = [(list(item.keys())[0], list(item.values())[0], text) for item, text in
-                                             zip(customer_sentiments, customer_dialogues) if list(item.keys())[0]
-                                             in color_map]
-
-                            # Display the annotated text in Streamlit
-                            st.title("Annotated Sentiment Text")
-
-                            for sentiment, score, text in filtered_data:
-                                color = color_map[sentiment]
-                                st.markdown(f'<span style="color:{color};">{text}</span>', unsafe_allow_html=True)
-                        else:
-                            st.warning("No sentiment analysis data found.")
+                    if st.button("Visualize", on_click=set_page("stats")):
+                        set_page("stats")
+                        print(current_page)
+                        st.rerun()
                 else:
                     st.error("File upload failed")
             else:
                 print("No file selected")
                 st.warning("No file selected")
+
+    elif current_page == "stats":
+        print("showing stats")
+        options = ("Sales Agent", "Customer")
+
+        choice = st.selectbox("Select a person for analysis:", options, index=None)
+        display_stats(st.session_state.response, choice)
 
     elif current_page == "signup":
         st.subheader("Create New Account")
@@ -193,6 +119,93 @@ def main():
                 user_db[new_user] = new_password
                 st.success("You have successfully created an account")
                 st.info("Go to the Login section to login")
+
+
+def display_stats(response, selected_option):
+    if selected_option == "Sales Agent":
+        sales_agent_sentiments = response.json().get("sales_agent_sentiments", [])
+        if sales_agent_sentiments:
+
+            # Pie Chart for Sentiment Analysis
+            st.header("Sentiment Analysis Pie Chart")
+            fig = create_pie_chart(sales_agent_sentiments)
+            st.plotly_chart(fig)
+
+            # Scatter PLot for Sentiment Analysis
+            st.header("Sentiment Analysis Scatter Plot")
+            df = scatter_plot(response.json().get("sales_agent_sentiments", []))
+            fig = px.scatter(df, x='index', y='sentiment', size='score', color='sentiment',
+                             color_discrete_map={'Positive': 'green', 'Neutral': 'grey',
+                                                 'Negative': 'red'},
+                             title='Sentiment Analysis Scatter Plot',
+                             labels={'index': 'Index', 'sentiment': 'Sentiment'},
+                             size_max=20,
+                             template='plotly_dark')
+            st.plotly_chart(fig)
+
+            # Annotated Text Sentiment Analysis
+            color_map = {
+                'Positive': 'green',
+                'Negative': 'red'
+            }
+            sales_agent_dialogues = response.json().get("sales_agent_dialogues")
+            # Filter positive and negative sentiments
+            filtered_data = [(list(item.keys())[0], list(item.values())[0], text) for item, text in
+                             zip(sales_agent_sentiments, sales_agent_dialogues) if list(item.keys())[0]
+                             in color_map]
+
+            # Display the annotated text in Streamlit
+            st.title("Annotated Sentiment Text")
+
+            for sentiment, score, text in filtered_data:
+                color = color_map[sentiment]
+                st.markdown(f'<span style="color:{color};">{text}</span>', unsafe_allow_html=True)
+        else:
+            st.warning("No sentiment analysis data found.")
+
+    elif selected_option == "Customer":
+
+        customer_sentiments = response.json().get("customer_sentiments", [])
+        if customer_sentiments:
+
+            # Pie Chart for Sentiment Analysis
+            st.header("Sentiment Analysis Pie Chart")
+            fig = create_pie_chart(customer_sentiments)
+            st.plotly_chart(fig)
+
+            # Scatter PLot for Sentiment Analysis
+            st.header("Sentiment Analysis Scatter Plot")
+            df = scatter_plot(response.json().get("customer_sentiments", []))
+            fig = px.scatter(df, x='index', y='sentiment', size='score', color='sentiment',
+                             color_discrete_map={'Positive': 'green', 'Neutral': 'grey',
+                                                 'Negative': 'red'},
+                             title='Sentiment Analysis Scatter Plot',
+                             labels={'index': 'Index', 'sentiment': 'Sentiment'},
+                             size_max=20,
+                             template='plotly_dark')
+            st.plotly_chart(fig)
+
+            # Annotated Text Sentiment Analysis
+            color_map = {
+                'Positive': 'green',
+                'Negative': 'red'
+            }
+            customer_dialogues = response.json().get("customer_dialogues")
+            # Filter positive and negative sentiments
+            filtered_data = [(list(item.keys())[0], list(item.values())[0], text) for item, text in
+                             zip(customer_sentiments, customer_dialogues) if list(item.keys())[0]
+                             in color_map]
+
+            # Display the annotated text in Streamlit
+            st.title("Annotated Sentiment Text")
+
+            for sentiment, score, text in filtered_data:
+                color = color_map[sentiment]
+                st.markdown(f'<span style="color:{color};">{text}</span>', unsafe_allow_html=True)
+        else:
+            st.warning("No sentiment analysis data found.")
+    else:
+        st.warning("No option selected!")
 
 
 def create_pie_chart(sentiment_scores):
