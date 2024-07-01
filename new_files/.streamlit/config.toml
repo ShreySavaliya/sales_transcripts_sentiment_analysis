@@ -1,0 +1,32 @@
+[server]
+headless = true
+enableCORS = false
+port = 8501
+
+[theme]
+primaryColor = "#F63366"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F2F6"
+textColor = "#262730"
+font = "sans serif"
+
+[global]
+# By default, Streamlit runs with a fixed URL path.
+# Enable this option to allow the app to be embedded in an iframe.
+# In that case, make sure to use HTTP(S) for your app and referer.
+# allowEmbedding = false
+
+[logger]
+# Specify the location of the log file to be used for writing the logs.
+# The log file path can be absolute or relative to the current directory.
+# To disable the logger, set the level to "CRITICAL".
+# file = "/tmp/streamlit.log"
+# level = "info"
+
+[client]
+# Streamlit automatically detects the theme of the OS and sets the app theme accordingly.
+# By setting this option to "light" or "dark", you can specify the default theme for the app.
+# theme = "light"
+
+[browser]
+gatherUsageStats = false
