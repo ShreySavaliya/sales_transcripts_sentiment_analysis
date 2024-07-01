@@ -91,8 +91,8 @@ def main():
                     transcript = response.json().get("content", "No Transcript Found")
                     st.text_area("Transcript", value=transcript, height=300)
                     print("Yaha tak pahucha")
-                    options = ["Customer", "Sales Agent"]
-                    selected_option = st.selectbox("Select a person for sentiment analysis:", options)
+                    options = ["Sales Agent", "Customer"]
+                    selected_option = st.selectbox("Select a person for sentiment analysis:", options, index=0)
 
                     if selected_option == "Sales Agent":
                         sales_agent_sentiments = response.json().get("sales_agent_sentiments", [])

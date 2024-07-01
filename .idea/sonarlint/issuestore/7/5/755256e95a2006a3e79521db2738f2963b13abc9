@@ -1,5 +1,5 @@
 
-hpython:S125"Remove this commented out code.(üÀ·€ýÿÿÿÿ8 Ê½Â†2J$a3684525-d29c-4d44-b4ff-0084c6aa86fc
-ypython:S1481."/Remove the unused local variable "home_button".(á™¾‹ûÿÿÿÿ8¡Ê½Â†2J$6fb28721-d298-4313-ac4b-16ecbcd30a13
-{python:S14812"1Remove the unused local variable "signup_button".(±›ƒÅþÿÿÿÿ8 Ê½Â†2J$5ebfe6f3-3a19-4feb-ad2d-419037ef7579
-tpython:S14810"0Remove the unused local variable "login_button".(•‘Œ(8¡Ê½Â†2J$3863639c-b99c-4982-99f5-cd56aa29a259
+hpython:S125"Remove this commented out code.(üÀ·€ýÿÿÿÿ8¬‘Ôä†2J$953ac391-fc18-43a1-942c-83805b36d4f4
+ypython:S1481-"/Remove the unused local variable "home_button".(á™¾‹ûÿÿÿÿ8¬‘Ôä†2J$6d9ef189-099d-488d-a71d-9cdd17e6bbcc
+tpython:S1481/"0Remove the unused local variable "login_button".(•‘Œ(8­‘Ôä†2J$a79b519c-5ee6-44e4-9586-36b7766052ec
+{python:S14811"1Remove the unused local variable "signup_button".(±›ƒÅþÿÿÿÿ8­‘Ôä†2J$004ee769-4426-4dcd-9528-df4745dae52c
