@@ -97,7 +97,7 @@ def main():
                 print("Uploaded file:", files)
                 response = None
                 try:
-                    response = requests.post('http://127.0.0.1:5000/upload', files=files, timeout=1000)
+                    response = requests.post('https://lemming-devoted-solely.ngrok-free.app/upload', files=files, timeout=1000)
                 except Exception as e:
                     print("Exception\n", e)
 
